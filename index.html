@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hermes Relay</title>
+<style>
+  :root { color-scheme: dark }
+  body { margin:0; height:100vh; display:flex; align-items:center; justify-content:center;
+    background:#212121; color:#ececec;
+    font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .card { text-align:center; padding:32px; max-width:420px }
+  .mark { width:52px; height:52px; border-radius:50%; background:#10a37f; color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700;
+    margin:0 auto 16px }
+  h1 { font-size:20px; font-weight:600; margin:0 0 6px }
+  p { color:#b4b4b4; font-size:14px; margin:0 0 18px; line-height:1.6 }
+  a { display:inline-block; padding:11px 20px; border-radius:10px; background:#10a37f; color:#fff;
+    text-decoration:none; font-weight:600; font-size:14px }
+  .sub { color:#8e8e8e; font-size:12px; margin-top:14px }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="mark">H</div>
+    <h1>Hermes Relay</h1>
+    <p id="msg">Looking up the current address…</p>
+    <a id="go" href="#" style="display:none">Open Hermes Relay</a>
+    <div class="sub" id="note"></div>
+  </div>
+<script>
+// The tunnel URL rotates whenever cloudflared restarts, so this page reads the
+// current one from tunnel.json (same repo) instead of hard-coding it.
+fetch('tunnel.json?_=' + Date.now())
+  .then(function (r) { return r.json() })
+  .then(function (d) {
+    if (!d || !d.url) throw new Error('no url');
+    var url = String(d.url).replace(/\/$/, '');
+    document.getElementById('msg').textContent = 'Taking you to the live relay…';
+    document.getElementById('go').href = url;
+    document.getElementById('note').textContent = url;
+    location.replace(url);
+  })
+  .catch(function () {
+    document.getElementById('msg').textContent =
+      'The relay address is not available right now. It is probably offline.';
+    document.getElementById('note').textContent = 'Ask for the current address.';
+  });
+</script>
+</body>
+</html>
